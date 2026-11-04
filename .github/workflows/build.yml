@@ -5,13 +5,23 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Fix Xcode project
+        run: |
+          rm -rf HN-ALEX7Z-FINAL.xcodeproj
+          mkdir -p HN-ALEX7Z-FINAL.xcodeproj
+          cat > HN-ALEX7Z-FINAL.xcodeproj/project.pbxproj <<'PBX'
+          // !$*UTF8*$!
+          { archiveVersion = 1; classes = {}; objectVersion = 56; objects = { A1 = {isa = PBXBuildFile; fileRef = A5; }; A2 = {isa = PBXBuildFile; fileRef = A6; }; A3 = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "HN-ALEX7Z-FINAL.app"; sourceTree = BUILT_PRODUCTS_DIR; }; A5 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; }; A6 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNApp.swift; sourceTree = "<group>"; }; G0 = {isa = PBXGroup; children = (GA, GB); sourceTree = "<group>"; }; GB = {isa = PBXGroup; children = (A3); name = Products; sourceTree = "<group>"; }; GA = {isa = PBXGroup; children = (A5, A6); path = "HN-ALEX7Z-FINAL"; sourceTree = "<group>"; }; TC = {isa = PBXNativeTarget; buildConfigurationList = CL2; buildPhases = (S0, A8, R0); buildRules = (); dependencies = (); name = "HN-ALEX7Z-FINAL"; productName = "HN-ALEX7Z-FINAL"; productReference = A3; productType = "com.apple.product-type.application"; }; PR = {isa = PBXProject; attributes = {BuildIndependentTargetsInParallel = 1;}; buildConfigurationList = CL1; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base); mainGroup = G0; productRefGroup = GB; projectDirPath = ""; projectRoot = ""; targets = (TC); }; R0 = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; }; S0 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A2, A1); runOnlyForDeploymentPostprocessing = 0; }; A8 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; }; C1 = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGNING_ALLOWED = NO; IPHONEOS_DEPLOYMENT_TARGET = 16.0; SDKROOT = iphoneos; SWIFT_VERSION = 5.0;}; name = Debug; }; C2 = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGNING_ALLOWED = NO; IPHONEOS_DEPLOYMENT_TARGET = 16.0; SDKROOT = iphoneos; SWIFT_VERSION = 5.0;}; name = Release; }; C3 = {isa = XCBuildConfiguration; buildSettings = {ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; CODE_SIGN_STYLE = Automatic; GENERATE_INFOPLIST_FILE = YES; MARKETING_VERSION = 1.0; PRODUCT_BUNDLE_IDENTIFIER = com.ad351.HN-ALEX7Z-FINAL; PRODUCT_NAME = "$(TARGET_NAME)"; TARGETED_DEVICE_FAMILY = "1,2";}; name = Debug; }; C4 = {isa = XCBuildConfiguration; buildSettings = {ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; CODE_SIGN_STYLE = Automatic; GENERATE_INFOPLIST_FILE = YES; MARKETING_VERSION = 1.0; PRODUCT_BUNDLE_IDENTIFIER = com.ad351.HN-ALEX7Z-FINAL; PRODUCT_NAME = "$(TARGET_NAME)"; TARGETED_DEVICE_FAMILY = "1,2";}; name = Release; }; CL1 = {isa = XCConfigurationList; buildConfigurations = (C1, C2); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; }; CL2 = {isa = XCConfigurationList; buildConfigurations = (C3, C4); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; }; }; rootObject = PR; }
+          PBX
       - name: Build IPA
         run: |
-          xcodebuild -project HN-ALEX7Z-FINAL.xcodeproj -scheme HN-ALEX7Z-FINAL -sdk iphoneos -configuration Release archive -archivePath app.xcarchive CODE_SIGNING_ALLOWED=NO
+          xcodebuild -project HN-ALEX7Z-FINAL.xcodeproj -target HN-ALEX7Z-FINAL -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO build
+          APP=$(find ~/Library/Developer/Xcode/DerivedData -name "HN-ALEX7Z-FINAL.app" | head -1)
           mkdir -p Payload
-          cp -R app.xcarchive/Products/Applications/*.app Payload/
+          cp -r "$APP" Payload/
           zip -r HN-ALEX7Z-FINAL.ipa Payload
-      - uses: actions/upload-artifact@v4
+      - name: Upload
+        uses: actions/upload-artifact@v4
         with:
           name: HN-ALEX7Z-FINAL-IPA
           path: HN-ALEX7Z-FINAL.ipa
