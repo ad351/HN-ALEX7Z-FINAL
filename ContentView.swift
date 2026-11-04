@@ -20,17 +20,21 @@ struct ContentView: View {
     @State private var injected = false
     @State private var masterOn = false
 
+    // Colores nuevos - Negro y Azul Oscuro
+    let azulOscuro = Color(red: 0.0, green: 0.15, blue: 0.45)
+    let azulBoton = Color(red: 0.0, green: 0.25, blue: 0.65)
+    let negroFondo = Color.black
+
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
-            // Fondo tenue
+            negroFondo.ignoresSafeArea()
             Image("background")
                 .resizable()
                 .scaledToFill()
-                .opacity(0.25)
+                .opacity(0.15)
                 .ignoresSafeArea()
 
-            // CAJA CHIQUITA CENTRADA - 260 de ancho nada más
+            // CAJA CHIQUITA CENTRADA
             VStack(spacing: 5) {
                 Text("HN-ALEX7Z")
                     .font(.system(size: 16, weight: .black))
@@ -39,10 +43,10 @@ struct ContentView: View {
 
                 Text(masterOn ? "ACTIVADO" : "DESACTIVADO")
                     .font(.system(size: 8, weight: .bold))
-                    .foregroundColor(masterOn ? .red : .white)
+                    .foregroundColor(.white)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
-                    .background(Color.red.opacity(masterOn ? 0.9 : 0.15))
+                    .background(masterOn ? azulBoton : Color.white.opacity(0.15))
                     .cornerRadius(10)
 
                 Button(action: {
@@ -55,7 +59,7 @@ struct ContentView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 5)
-                        .background(Color.red)
+                        .background(azulBoton)
                         .cornerRadius(6)
                 }
 
@@ -75,7 +79,7 @@ struct ContentView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 5)
-                        .background(Color.red)
+                        .background(azulBoton)
                         .cornerRadius(6)
                     Button("STOP") {
                         masterOn = false
@@ -89,53 +93,40 @@ struct ContentView: View {
                     .cornerRadius(6)
                 }
 
+                // LOS 2 BOTONES NUEVOS QUE PEDISTE
                 HStack(spacing: 5) {
-                    Button("FREE FIRE") { openFreeFire() }
-                        .font(.system(size: 9, weight: .bold))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 5)
-                        .background(Color.red)
-                        .cornerRadius(6)
-                    Button("FREE FIRE MAX") { openFreeFireMax() }
-                        .font(.system(size: 8, weight: .bold))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 5)
-                        .background(Color.white.opacity(0.15))
-                        .cornerRadius(6)
+                    Button("FREE FIRE") {
+                        // Safari.open("freefire://")
+                        if let url = URL(string: "freefire://") {
+                            UIApplication.shared.open(url)
+                        }
+                    }
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 5)
+                    .background(azulOscuro)
+                    .cornerRadius(6)
+
+                    Button("FREE FIRE MAX") {
+                        // Safari.open("freefiremax://")
+                        if let url = URL(string: "freefiremax://") {
+                            UIApplication.shared.open(url)
+                        }
+                    }
+                    .font(.system(size: 8, weight: .bold))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 5)
+                    .background(azulOscuro)
+                    .cornerRadius(6)
                 }
             }
             .padding(10)
-            .frame(width: 260) // <--- ESTO LO HACE CHIQUITO Y CENTRADO
-            .background(Color.black.opacity(0.85))
+            .frame(width: 260)
+            .background(Color.black.opacity(0.9))
             .cornerRadius(14)
-            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.red, lineWidth: 1))
-        }
-    }
-
-    // Intenta VARIOS esquemas, no solo uno
-    func openFreeFire() {
-        let schemes = ["freefire://", "garenafreefire://", "com.dts.freefireth://", "FreeFire://"]
-        for s in schemes {
-            if let url = URL(string: s), UIApplication.shared.canOpenURL(url) {
-                UIApplication.shared.open(url); return
-            }
-        }
-        // Si ninguno abre, abre por Bundle ID
-        if let url = URL(string: "https://apps.apple.com/app/id1300146617") {
-            UIApplication.shared.open(url)
-        }
-    }
-    func openFreeFireMax() {
-        let schemes = ["freefiremax://", "garenafreefiremax://", "com.dts.freefiremax://", "FreeFireMax://"]
-        for s in schemes {
-            if let url = URL(string: s), UIApplication.shared.canOpenURL(url) {
-                UIApplication.shared.open(url); return
-            }
-        }
-        if let url = URL(string: "https://apps.apple.com/app/id1480516829") {
-            UIApplication.shared.open(url)
+            .overlay(RoundedRectangle(cornerRadius: 14).stroke(azulBoton, lineWidth: 1))
         }
     }
 }
@@ -155,11 +146,11 @@ struct OptionRow: View {
                     .font(.system(size: 8, weight: .black))
                     .foregroundColor(.white)
                     .frame(width: 38, height: 18)
-                    .background(isOn ? Color.red : Color.white.opacity(0.2))
+                    .background(isOn ? Color(red: 0.0, green: 0.25, blue: 0.65) : Color.white.opacity(0.2))
                     .cornerRadius(5)
             }
         }
-        .padding(.horizontal, 4)
+        .padding(.horizontal, 7)
         .padding(.vertical, 4)
         .background(Color.white.opacity(0.08))
         .cornerRadius(6)
