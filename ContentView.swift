@@ -1,64 +1,127 @@
 import SwiftUI
 
 @main
-struct HNApp: App {
+struct HackApp: App {
     var body: some Scene {
-        WindowGroup {
-            ContentView()
-        }
+        WindowGroup { ContentView() }
     }
 }
 
 struct ContentView: View {
-    @State private var keyInput = ""
-    @State private var mensaje = ""
-    @State private var desbloqueado = false
-
-    let misKeys: [String: String] = [
-        "HN-38A1-CQCD-K2GG": "1 DIA",
-        "HN-85VW-0P3K-E3ZF": "7 DIAS",
-        "HN-ZFXE-77J5-1L0Y": "30 DIAS",
-        "HN-BSLA-7FI7-30EG": "ILIMITADA"
-    ]
-
-    var body: some View {
-        if desbloqueado {
-            VStack {
-                Text("HN ALEX7z")
-                    .font(.largeTitle.bold())
-                Text("Bienvenido, key correcta ✅")
-                Text("Tu key: \(keyInput)")
-            }
+    @State var hue: Double = 0
+    @AppStorage("aimbot") var aimbot = true
+    @AppStorage("esp") var esp = true
+    @AppStorage("aimFov") var aimFov = true
+    @AppStorage("noRecoil") var noRecoil = true
+    @State var injected = true
+    
+    let colors: [Color] = [.blue, .purple, .green, .yellow, .red, .orange, .blue]
+    
+    func haptic() {
+        let gen = UIImpactFeedbackGenerator(style: .medium)
+        gen.impactOccurred()
+    }
+    
+    func openApp(scheme: String, appStoreId: String) {
+        if let url = URL(string: scheme), UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
         } else {
-            VStack(spacing: 20) {
-                Text("HN ALEX7z")
-                    .font(.largeTitle.bold())
-                Text("Pon tu Key para entrar")
-                TextField("HN-XXXX-XXXX-XXXX", text: $keyInput)
-                    .textFieldStyle(.roundedBorder)
-                    .autocapitalization(.allCharacters)
-                    .padding(.horizontal)
-                Button("Activar") {
-                    verificar()
-                }
-                .buttonStyle(.borderedProminent)
-                Text(mensaje)
-                    .foregroundColor(.red)
+            // Si no está instalado, abre App Store
+            if let storeUrl = URL(string: "Safari. open("freefiremax://"). {
+                UIApplication.shared.open(storeUrl)
             }
-            .padding()
         }
     }
-
-    func verificar() {
-        let keyLimpia = keyInput.trimmingCharacters(in: .whitespaces).uppercased()
-        if let tipo = misKeys[keyLimpia] {
-            UserDefaults.standard.set(keyLimpia, forKey: "keyGuardada")
-            UserDefaults.standard.set(Date(), forKey: "fechaActivacion")
-            mensaje = ""
-            desbloqueado = true
-            print("Key correcta: \(tipo)")
-        } else {
-            mensaje = "Key incorrecta ❌"
+    
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            
+            VStack(spacing: 15) {
+                // LOGO
+                Text("HN-ALEX7z").font(.system(size: 32, weight: .heavy, design: .rounded)).foregroundColor(.white)
+                Text("EXTERNAL").font(.system(size: 28, weight: .black, design: .rounded))
+                    .foregroundStyle(LinearGradient(gradient: Gradient(colors: colors), startPoint: .leading, endPoint: .trailing))
+                    .hueRotation(.degrees(hue * 360))
+                    .shadow(color: .blue.opacity(0.9), radius: 40, x: 0, y: 10)
+                    .shadow(color: .red.opacity(0.8), radius: 40, x: 0, y: 0)
+                
+                Spacer().frame(height: 10)
+                
+                // MENU
+                VStack(spacing: 14) {
+                    Toggle("AIMBOT", isOn: $aimbot)
+                    Toggle("ESP LINE", isOn: $esp)
+                    Toggle("AIM FOV", isOn: $aimFov)
+                    Toggle("NO RECOIL", isOn: $noRecoil)
+                }
+                .toggleStyle(SwitchToggleStyle(tint: .green))
+                .foregroundColor(.white)
+                .padding().background(Color.white.opacity(0.12)).cornerRadius(15)
+                .padding(.horizontal)
+                .onChange(of: aimbot) { _ in haptic() }
+                .onChange(of: esp) { _ in haptic() }
+                .onChange(of: aimFov) { _ in haptic() }
+                .onChange(of: noRecoil) { _ in haptic() }
+                
+                // BOTON INJECT
+                Button(action: {
+                    haptic()
+                    withAnimation { injected.toggle() }
+                }) {
+                    Text(injected ? "INJECTED ✓" : "INJECT")
+                        .font(.system(size: 18, weight: .black, design: .rounded))
+                        .foregroundColor(.black)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(injected ? Color.green : Color.white)
+                        .cornerRadius(12)
+                        .shadow(color: (injected ? Color.green : Color.white).opacity(0.6), radius: 15)
+                }
+                .padding(.horizontal, 40)
+                .padding(.top, 10)
+                
+                Spacer()
+                
+                // BOTONES FREE FIRE
+                VStack(spacing: 10) {
+                    Text("EXTERNAL").font(.system(size: 12, weight: .bold)).foregroundColor(.white.opacity(0.5))
+                    
+                    HStack(spacing: 12) {
+                        Button(action: {
+                            haptic()
+                            openApp(scheme: "Safari. open("freefire://")
+                        }) {
+                            HStack { Image(systemName: "gamecontroller.fill"); Text("Free Fire") }
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 12)
+                                .background(Color.red.opacity(0.8))
+                                .cornerRadius(10)
+                        }
+                        
+                        Button(action: {
+                            haptic()
+                            openApp(scheme: "Safari. open("freefiremax://")
+                        }) {
+                            HStack { Image(systemName: "gamecontroller.fill"); Text("Free Fire MAX") }
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 12)
+                                .background(Color.blue.opacity(0.8))
+                                .cornerRadius(10)
+                        }
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.bottom, 30)
+            }
+            .padding(.top, 60)
+        }
+        .onAppear {
+            withAnimation(.linear(duration: 3).repeatForever(autoreverses: false)) { hue = 1 }
         }
     }
 }
