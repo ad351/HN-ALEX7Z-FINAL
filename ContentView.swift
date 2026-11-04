@@ -1,11 +1,19 @@
 import SwiftUI
 
+@main
+struct HNApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
+}
+
 struct ContentView: View {
     @State private var keyInput = ""
     @State private var mensaje = ""
     @State private var desbloqueado = false
 
-    // AQUÍ VAN TUS KEYS - Tú las cambias cuando quieras
     let misKeys: [String: String] = [
         "HN-38A1-CQCD-K2GG": "1 DIA",
         "HN-85VW-0P3K-E3ZF": "7 DIAS",
@@ -15,7 +23,6 @@ struct ContentView: View {
 
     var body: some View {
         if desbloqueado {
-            // AQUÍ VA TU APP NORMAL, LO DE HN ALEX7z
             VStack {
                 Text("HN ALEX7z")
                     .font(.largeTitle.bold())
@@ -27,17 +34,14 @@ struct ContentView: View {
                 Text("HN ALEX7z")
                     .font(.largeTitle.bold())
                 Text("Pon tu Key para entrar")
-                
                 TextField("HN-XXXX-XXXX-XXXX", text: $keyInput)
                     .textFieldStyle(.roundedBorder)
                     .autocapitalization(.allCharacters)
                     .padding(.horizontal)
-                
                 Button("Activar") {
                     verificar()
                 }
                 .buttonStyle(.borderedProminent)
-                
                 Text(mensaje)
                     .foregroundColor(.red)
             }
@@ -47,9 +51,7 @@ struct ContentView: View {
 
     func verificar() {
         let keyLimpia = keyInput.trimmingCharacters(in: .whitespaces).uppercased()
-        
         if let tipo = misKeys[keyLimpia] {
-            // Si existe, guarda que ya entró
             UserDefaults.standard.set(keyLimpia, forKey: "keyGuardada")
             UserDefaults.standard.set(Date(), forKey: "fechaActivacion")
             mensaje = ""
