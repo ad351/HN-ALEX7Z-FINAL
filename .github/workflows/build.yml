@@ -5,15 +5,11 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Fix files
+      - name: Fix project
         run: |
-          echo "=== BEFORE ==="
-          find . -name "*.swift" -type f
-          # Borrar duplicados y carpetas anidadas malas
           rm -rf HN-ALEX7Z-FINAL.xcodeproj
           rm -rf HN-ALEX7Z-FINAL/HN-ALEX7Z-FINAL
           mkdir -p HN-ALEX7Z-FINAL
-          
           cat > HN-ALEX7Z-FINAL/HNApp.swift <<'SWIFT'
           import SwiftUI
           @main
@@ -25,34 +21,28 @@ jobs:
               }
           }
           SWIFT
-          
           cat > HN-ALEX7Z-FINAL/ContentView.swift <<'SWIFT'
           import SwiftUI
           struct ContentView: View {
               var body: some View {
-                  VStack(spacing: 20) {
+                  VStack {
                       Text("HN-ALEX7Z-FINAL").font(.largeTitle).bold()
                       Text("Build OK!").foregroundColor(.green)
                   }
-                  .frame(maxWidth: .infinity, maxHeight: .infinity)
               }
           }
           SWIFT
-          
-          echo "=== AFTER ==="
-          find . -name "*.swift" -type f
-          cat HN-ALEX7Z-FINAL/HNApp.swift
-      - name: Create Xcode project
-        run: |
           mkdir -p HN-ALEX7Z-FINAL.xcodeproj
           cat > HN-ALEX7Z-FINAL.xcodeproj/project.pbxproj <<'PBX'
           // !$*UTF8*$!
-          {archiveVersion=1; classes={}; objectVersion=56; objects={A1={isa=PBXBuildFile; fileRef=A5;}; A2={isa=PBXBuildFile; fileRef=A6;}; A3={isa=PBXFileReference; explicitFileType=wrapper.application; includeInIndex=0; path=HN-ALEX7Z-FINAL.app; sourceTree=BUILT_PRODUCTS_DIR;}; A5={isa=PBXFileReference; lastKnownFileType=sourcecode.swift; path=ContentView.swift; sourceTree="<group>";}; A6={isa=PBXFileReference; lastKnownFileType=sourcecode.swift; path=HNApp.swift; sourceTree="<group>";}; G0={isa=PBXGroup; children=(GA,GB); sourceTree="<group>";}; GB={isa=PBXGroup; children=(A3); name=Products; sourceTree="<group>";}; GA={isa=PBXGroup; children=(A5,A6); path=HN-ALEX7Z-FINAL; sourceTree="<group>";}; TC={isa=PBXNativeTarget; buildConfigurationList=CL2; buildPhases=(S0,A8,R0); buildRules=(); dependencies=(); name=HN-ALEX7Z-FINAL; productName=HN-ALEX7Z-FINAL; productReference=A3; productType="com.apple.product-type.application";}; PR={isa=PBXProject; attributes={BuildIndependentTargetsInParallel=1;}; buildConfigurationList=CL1; compatibilityVersion="Xcode 14.0"; developmentRegion=en; hasScannedForEncodings=0; knownRegions=(en,Base); mainGroup=G0; productRefGroup=GB; projectDirPath=""; projectRoot=""; targets=(TC);}; R0={isa=PBXResourcesBuildPhase; buildActionMask=2147483647; files=(); runOnlyForDeploymentPostprocessing=0;}; S0={isa=PBXSourcesBuildPhase; buildActionMask=2147483647; files=(A2,A1); runOnlyForDeploymentPostprocessing=0;}; A8={isa=PBXFrameworksBuildPhase; buildActionMask=2147483647; files=(); runOnlyForDeploymentPostprocessing=0;}; C1={isa=XCBuildConfiguration; buildSettings={CODE_SIGNING_ALLOWED=NO; IPHONEOS_DEPLOYMENT_TARGET=16.0; SDKROOT=iphoneos; SWIFT_VERSION=5.0;}; name=Debug;}; C2={isa=XCBuildConfiguration; buildSettings={CODE_SIGNING_ALLOWED=NO; IPHONEOS_DEPLOYMENT_TARGET=16.0; SDKROOT=iphoneos; SWIFT_VERSION=5.0;}; name=Release;}; C3={isa=XCBuildConfiguration; buildSettings={ASSETCATALOG_COMPILER_APPICON_NAME=AppIcon; CODE_SIGN_STYLE=Automatic; GENERATE_INFOPLIST_FILE=YES; MARKETING_VERSION=1.0; PRODUCT_BUNDLE_IDENTIFIER=com.ad351.HN-ALEX7Z-FINAL; PRODUCT_NAME="$(TARGET_NAME)"; TARGETED_DEVICE_FAMILY="1,2";}; name=Debug;}; C4={isa=XCBuildConfiguration; buildSettings={ASSETCATALOG_COMPILER_APPICON_NAME=AppIcon; CODE_SIGN_STYLE=Automatic; GENERATE_INFOPLIST_FILE=YES; MARKETING_VERSION=1.0; PRODUCT_BUNDLE_IDENTIFIER=com.ad351.HN-ALEX7Z-FINAL; PRODUCT_NAME="$(TARGET_NAME)"; TARGETED_DEVICE_FAMILY="1,2";}; name=Release;}; CL1={isa=XCConfigurationList; buildConfigurations=(C1,C2); defaultConfigurationIsVisible=0; defaultConfigurationName=Release;}; CL2={isa=XCConfigurationList; buildConfigurations=(C3,C4); defaultConfigurationIsVisible=0; defaultConfigurationName=Release;};}; rootObject=PR;}
+          {archiveVersion=1; classes={}; objectVersion=56; objects={A1={isa=PBXBuildFile; fileRef=A5;}; A2={isa=PBXBuildFile; fileRef=A6;}; A3={isa=PBXFileReference; explicitFileType=wrapper.application; includeInIndex=0; path=HN-ALEX7Z-FINAL.app; sourceTree=BUILT_PRODUCTS_DIR;}; A5={isa=PBXFileReference; lastKnownFileType=sourcecode.swift; path=ContentView.swift; sourceTree="<group>";}; A6={isa=PBXFileReference; lastKnownFileType=sourcecode.swift; path=HNApp.swift; sourceTree="<group>";}; G0={isa=PBXGroup; children=(GA,GB); sourceTree="<group>";}; GB={isa=PBXGroup; children=(A3); name=Products; sourceTree="<group>";}; GA={isa=PBXGroup; children=(A5,A6); path=HN-ALEX7Z-FINAL; sourceTree="<group>";}; TC={isa=PBXNativeTarget; buildConfigurationList=CL2; buildPhases=(S0,A8,R0); buildRules=(); dependencies=(); name=HN-ALEX7Z-FINAL; productName=HN-ALEX7Z-FINAL; productReference=A3; productType="com.apple.product-type.application";}; PR={isa=PBXProject; attributes={BuildIndependentTargetsInParallel=1;}; buildConfigurationList=CL1; compatibilityVersion="Xcode 14.0"; developmentRegion=en; hasScannedForEncodings=0; knownRegions=(en,Base); mainGroup=G0; productRefGroup=GB; projectDirPath=""; projectRoot=""; targets=(TC);}; R0={isa=PBXResourcesBuildPhase; buildActionMask=2147483647; files=(); runOnlyForDeploymentPostprocessing=0;}; S0={isa=PBXSourcesBuildPhase; buildActionMask=2147483647; files=(A2,A1); runOnlyForDeploymentPostprocessing=0;}; A8={isa=PBXFrameworksBuildPhase; buildActionMask=2147483647; files=(); runOnlyForDeploymentPostprocessing=0;}; C1={isa=XCBuildConfiguration; buildSettings={CODE_SIGNING_ALLOWED=NO; IPHONEOS_DEPLOYMENT_TARGET=16.0; SDKROOT=iphoneos; SWIFT_VERSION=5.0;}; name=Debug;}; C2={isa=XCBuildConfiguration; buildSettings={CODE_SIGNING_ALLOWED=NO; IPHONEOS_DEPLOYMENT_TARGET=16.0; SDKROOT=iphoneos; SWIFT_VERSION=5.0;}; name=Release;}; C3={isa=XCBuildConfiguration; buildSettings={CODE_SIGN_STYLE=Automatic; GENERATE_INFOPLIST_FILE=YES; PRODUCT_BUNDLE_IDENTIFIER=com.ad351.HN-ALEX7Z-FINAL;}; name=Debug;}; C4={isa=XCBuildConfiguration; buildSettings={CODE_SIGN_STYLE=Automatic; GENERATE_INFOPLIST_FILE=YES; PRODUCT_BUNDLE_IDENTIFIER=com.ad351.HN-ALEX7Z-FINAL;}; name=Release;}; CL1={isa=XCConfigurationList; buildConfigurations=(C1,C2); defaultConfigurationIsVisible=0; defaultConfigurationName=Release;}; CL2={isa=XCConfigurationList; buildConfigurations=(C3,C4); defaultConfigurationIsVisible=0; defaultConfigurationName=Release;};}; rootObject=PR;}
           PBX
-      - name: Build
+      - name: Build IPA
         run: |
-          xcodebuild -project HN-ALEX7Z-FINAL.xcodeproj -target HN-ALEX7Z-FINAL -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO -derivedDataPath build | grep -A5 -B5 "error:\|Ld\|BUILD"
-          APP=$(find build -name "HN-ALEX7Z-FINAL.app" | head -1)
+          xcodebuild -project HN-ALEX7Z-FINAL.xcodeproj -target HN-ALEX7Z-FINAL -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO
+          APP=$(find ~/Library/Developer/Xcode/DerivedData -name "HN-ALEX7Z-FINAL.app" -type d | head -1)
+          if [ -z "$APP" ]; then APP=$(find build -name "HN-ALEX7Z-FINAL.app" -o -find . -name "HN-ALEX7Z-FINAL.app" | head -1); fi
+          echo "APP at $APP"
           ls -lh "$APP"
           mkdir -p Payload
           cp -r "$APP" Payload/
