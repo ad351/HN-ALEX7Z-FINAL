@@ -1,10 +1,18 @@
 import SwiftUI
+
+@main
+struct HackApp: App {
+    var body: some Scene {
+        WindowGroup { ContentView() }
+    }
+}
+
 struct ContentView: View {
     @State var hue: Double = 0
-    @State var aimbot = True
-    @State var esp = True
-    @State var aimFov = True
-    @State var noRecoil = True
+    @State var aimbot = true
+    @State var esp = true
+    @State var aimFov = true
+    @State var noRecoil = true
     let colors: [Color] = [.blue, .purple, .green, .yellow, .red, .orange, .blue]
     var body: some View {
         ZStack {
