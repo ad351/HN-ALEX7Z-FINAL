@@ -1,64 +1,104 @@
 name: Build IPA
-on: [push]
+on: 
+  workflow_dispatch: {}
+
 jobs:
   build:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Build IPA Manually (no xcodeproj)
+      - name: Build PANEL FULL RAINBOW
         run: |
-          rm -rf build Payload *.ipa
-          rm -rf HN-ALEX7Z-FINAL/build
-          mkdir -p HN-ALEX7Z-FINAL
-          cat > HN-ALEX7Z-FINAL/HNApp.swift <<'SWIFT'
-          import SwiftUI
-          @main
-          struct HNApp: App {
-              var body: some Scene {
-                  WindowGroup {
-                      ContentView()
-                  }
-              }
-          }
-          SWIFT
-          cat > HN-ALEX7Z-FINAL/ContentView.swift <<'SWIFT'
-          import SwiftUI
-          struct ContentView: View {
-              var body: some View {
-                  VStack(spacing:20){
-                      Text("HN-ALEX7Z-FINAL").font(.largeTitle).bold()
-                      Text("Build OK! IPA Manual").foregroundColor(.green)
-                      Text("No Xcode Project Needed")
-                  }.padding()
-              }
-          }
-          SWIFT
-          mkdir -p Payload/HN-ALEX7Z-FINAL.app
-          cat > Payload/HN-ALEX7Z-FINAL.app/Info.plist <<'PLIST'
+          set -e
+          APP="HN-ALEX7Z-FINAL"
+          rm -rf Payload art
+          mkdir -p Payload/$APP.app
+          
+          cat > Info.plist << 'PLIST'
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0"><dict>
-          <key>CFBundleIdentifier</key><string>com.ad351.HN-ALEX7Z-FINAL</string>
-          <key>CFBundleName</key><string>HN-ALEX7Z-FINAL</string>
-          <key>CFBundleDisplayName</key><string>HN-ALEX7Z-FINAL</string>
-          <key>CFBundleExecutable</key><string>HN-ALEX7Z-FINAL</string>
-          <key>CFBundlePackageType</key><string>APPL</string>
-          <key>CFBundleVersion</key><string>1.0</string>
-          <key>CFBundleShortVersionString</key><string>1.0</string>
-          <key>LSRequiresIPhoneOS</key><true/>
-          <key>UILaunchStoryboardName</key><string></string>
-          <key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string></array>
-          <key>MinimumOSVersion</key><string>16.0</string>
-          </dict></plist>
+          <plist version="1.0">
+          <dict>
+            <key>CFBundleIdentifier</key><string>com.alex.HNALEX7ZFINAL</string>
+            <key>CFBundleName</key><string>EXTERNAL</string>
+            <key>CFBundleDisplayName</key><string>EXTERNAL : HN ALEX7z</string>
+            <key>CFBundleVersion</key><string>1.0</string>
+            <key>CFBundleShortVersionString</key><string>1.0</string>
+            <key>CFBundleExecutable</key><string>HN-ALEX7Z-FINAL</string>
+            <key>CFBundlePackageType</key><string>APPL</string>
+            <key>LSRequiresIPhoneOS</key><true/>
+            <key>LSApplicationQueriesSchemes</key><array><string>freefire</string></array>
+          </dict>
+          </plist>
           PLIST
-          echo "APPL????" > Payload/HN-ALEX7Z-FINAL.app/PkgInfo
-          xcrun --sdk iphoneos swiftc -target arm64-apple-ios16.0 -O -o Payload/HN-ALEX7Z-FINAL.app/HN-ALEX7Z-FINAL HN-ALEX7Z-FINAL/*.swift -Xlinker -rpath -Xlinker @executable_path/Frameworks
-          chmod +x Payload/HN-ALEX7Z-FINAL.app/HN-ALEX7Z-FINAL
-          ls -lh Payload/HN-ALEX7Z-FINAL.app/
-          file Payload/HN-ALEX7Z-FINAL.app/HN-ALEX7Z-FINAL
-          zip -r HN-ALEX7Z-FINAL.ipa Payload
-          ls -lh *.ipa
+          
+          cp Info.plist Payload/$APP.app/
+
+          cat > App.swift << 'SWIFT'
+          import SwiftUI
+          struct ContentView: View {
+            @State var tab = 0
+            @State var hue: Double = 0
+            var body: some View {
+              ZStack {
+                Color.black.ignoresSafeArea()
+                LinearGradient(colors: [Color(hue: 0.75, saturation: 1, brightness: 0.4), .black, Color(hue: 0, saturation: 1, brightness: 0.4)], startPoint: .topLeading, endPoint: .bottomTrailing).opacity(0.6).ignoresSafeArea()
+                VStack(spacing: 0){
+                  ZStack{
+                    RoundedRectangle(cornerRadius: 18).fill(Color.black.opacity(0.85)).overlay(
+                      RoundedRectangle(cornerRadius: 18).fill(
+                        LinearGradient(colors: [Color(hue: hue/360, saturation: 0.8, brightness: 0.5).opacity(0.25), Color(hue: (hue+60).truncatingRemainder(dividingBy: 360)/360, saturation: 0.8, brightness: 0.5).opacity(0.25)], startPoint: .topLeading, endPoint: .bottomTrailing)
+                      )
+                    )
+                    .overlay(RoundedRectangle(cornerRadius: 18).stroke(AngularGradient(gradient: Gradient(colors: [.red,.yellow,.green,.cyan,.blue,.purple,.red]), center: .center, angle: .degrees(hue)), lineWidth: 3).shadow(color: Color(hue: hue/360, saturation: 1, brightness: 1), radius: 12))
+                    
+                    VStack(spacing: 10){
+                      HStack(spacing: 5){
+                        ForEach(Array(["FUNCTION","EXTRAS","Devices","Skins"].enumerated()), id: \.offset){ i,t in
+                          Text(t).font(.system(size: 8, weight: .black)).foregroundColor(tab==i ? Color(hue: hue/360, saturation: 1, brightness: 1) : .gray).padding(.vertical, 5).padding(.horizontal, 8).background(tab==i ? Color.white.opacity(0.12) : Color.clear).cornerRadius(6).onTapGesture{ tab=i }
+                        }
+                      }
+                      if tab==0 { VStack(spacing: 6){ RowRainbow(title:"SPEED", hue: $hue); RowRainbow(title:"HEAD", hue: $hue); RowRainbow(title:"BUILD", hue: $hue) } }
+                      else if tab==1 { VStack(spacing: 6){ RowRainbow(title:"BOOST PACK", hue: $hue); RowRainbow(title:"NIGHT MODE", hue: $hue); RowRainbow(title:"HOTKEYS", hue: $hue) } }
+                      else if tab==2 {
+                        VStack{ Text("HN ALEX7z").font(.system(size: 10, weight: .bold)).foregroundColor(Color(hue: hue/360, saturation: 1, brightness: 1)); Text("40 Días ACTIVO").font(.system(size: 8)).foregroundColor(.green) }.padding().background(Color.white.opacity(0.05)).cornerRadius(8)
+                      } else {
+                        VStack(spacing: 6){ ForEach(["DEFAULT NEON","CRIMSON SHADOW","CYBER PURPLE"], id:\.self){ s in HStack{ Text(s).font(.system(size: 7)).foregroundColor(.white); Spacer(); Text("OFF").font(.system(size: 6)).foregroundColor(.gray) }.padding(8).background(Color.white.opacity(0.05)).cornerRadius(6) } }
+                      }
+                      Spacer()
+                      Button(action: { if let url = URL(string: "freefire://") { UIApplication.shared.open(url) } }){
+                        Text("ABRIR FREE FIRE").font(.system(size: 8, weight: .bold)).foregroundColor(Color(hue: hue/360, saturation: 1, brightness: 1)).padding(.vertical, 6).padding(.horizontal, 14).overlay(RoundedRectangle(cornerRadius: 6).stroke(Color(hue: hue/360, saturation: 1, brightness: 1), lineWidth: 1)).shadow(color: Color(hue: hue/360, saturation: 1, brightness: 1), radius: 8)
+                      }
+                      Text("EXTERNAL : HN ALEX7z").font(.system(size: 7, weight: .bold)).foregroundColor(Color(hue: hue/360, saturation: 1, brightness: 1).opacity(0.8)).padding(.top, 4)
+                    }.padding()
+                  }.frame(height: 520).padding(.horizontal, 12)
+                }
+              }
+              .onAppear{ withAnimation(.linear(duration: 4).repeatForever(autoreverses: false)){ hue = 360 } }
+            }
+          }
+          struct RowRainbow: View {
+            var title: String; @Binding var hue: Double; @State var on = false
+            var body: some View {
+              HStack{
+                Text(title).font(.system(size: 8, weight: .bold)).foregroundColor(.white)
+                Spacer()
+                ZStack{ Capsule().fill(on ? Color(hue: hue/360, saturation: 1, brightness: 1) : Color.white.opacity(0.15)).frame(width: 26, height: 13); Circle().fill(.white).frame(width: 9, height: 9).offset(x: on ? 6 : -6).animation(.spring(response: 0.2), value: on) }.onTapGesture{ on.toggle() }
+                Text(on ? "ON" : "OFF").font(.system(size: 6)).foregroundColor(on ? Color(hue: hue/360, saturation: 1, brightness: 1) : .gray).frame(width: 16)
+              }.padding(8).background(Color.white.opacity(0.04)).cornerRadius(7)
+            }
+          }
+          @main struct AppMain: App { var body: some Scene { WindowGroup { ContentView() } } }
+          SWIFT
+          
+          SDK=$(xcrun --sdk iphoneos --show-sdk-path)
+          xcrun --sdk iphoneos swiftc App.swift -o $APP -sdk $SDK -target arm64-apple-ios16.0 -framework SwiftUI -framework UIKit
+          mv $APP Payload/$APP.app/
+          chmod +x Payload/$APP.app/$APP
+          zip -r $APP-FULL-RAINBOW.ipa Payload > /dev/null
+          mkdir -p ../art
+          mv $APP-FULL-RAINBOW.ipa ../art/
+          
       - uses: actions/upload-artifact@v4
         with:
-          name: HN-ALEX7Z-FINAL-IPA
-          path: HN-ALEX7Z-FINAL.ipa
+          name: EXTERNAL-HN-ALEX7z-RAINBOW
+          path: art/*.ipa
