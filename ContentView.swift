@@ -23,7 +23,7 @@ struct ContentView: View {
 
     @State private var inyectando = false
     @State private var progreso: Double = 0
-    @State private var mensaje = ""
+    @State private var mensaje = "LISTO PARA INYECTAR"
 
     let azulOscuro = Color(red: 0.0, green: 0.15, blue: 0.45)
     let azulBoton = Color(red: 0.0, green: 0.25, blue: 0.65)
@@ -37,38 +37,28 @@ struct ContentView: View {
                     .foregroundColor(.white)
                     .padding(.top, 8)
 
-                // ESTADO VERDADERO DE INJECT
                 Text(injected ? "INYECTADO ✔" : inyectando ? "INYECTANDO... \(Int(progreso * 100))%" : "SIN INYECTAR")
                     .font(.system(size: 8, weight: .bold))
                     .foregroundColor(injected ? .green : .white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 3)
+                    .padding(.horizontal, 8).padding(.vertical, 3)
                     .background(injected ? Color.green.opacity(0.2) : Color.white.opacity(0.15))
                     .cornerRadius(10)
 
                 if inyectando {
-                    ProgressView(value: progreso)
-                        .tint(Color.blue)
-                        .frame(width: 220)
+                    ProgressView(value: progreso).tint(Color.blue).frame(width: 220)
                 }
-                if !mensaje.isEmpty {
-                    Text(mensaje)
-                        .font(.system(size: 7, weight: .bold))
-                        .foregroundColor(.yellow)
-                }
+                Text(mensaje)
+                    .font(.system(size: 7, weight: .bold))
+                    .foregroundColor(.yellow)
                 if injected && !fechaInject.isEmpty {
-                    Text("Inyectado: \(fechaInject)")
-                        .font(.system(size: 7, weight: .bold))
-                        .foregroundColor(.gray)
+                    Text("Inyectado: \(fechaInject)").font(.system(size: 7, weight: .bold)).foregroundColor(.gray)
                 }
 
-                // ZONA DONDE SE VEN LAS OPCIONES
+                // ZONA VISUAL
                 ZStack {
                     Color.white.opacity(0.08)
                     if injected {
-                        if aimFov {
-                            Circle().stroke(Color.blue, lineWidth: 1.5).frame(width: 90, height: 90)
-                        }
+                        if aimFov { Circle().stroke(Color.blue, lineWidth: 1.5).frame(width: 90, height: 90) }
                         if espLine {
                             Path { p in
                                 p.move(to: CGPoint(x: 110, y: 80)); p.addLine(to: CGPoint(x: 60, y: 20))
@@ -85,7 +75,7 @@ struct ContentView: View {
                             Text("INYECTADO - ACTIVA UNA OPCION").font(.system(size: 7, weight: .bold)).foregroundColor(.green)
                         }
                     } else {
-                        Text("SIN INYECTAR - DALE INJECT ABAJO").font(.system(size: 7, weight: .bold)).foregroundColor(.gray)
+                        Text("DALE INJECT PARA ACTIVAR").font(.system(size: 7, weight: .bold)).foregroundColor(.gray)
                     }
                 }
                 .frame(width: 220, height: 80)
@@ -93,13 +83,10 @@ struct ContentView: View {
                 .overlay(RoundedRectangle(cornerRadius: 8).stroke(azulBoton, lineWidth: 1))
 
                 Button(action: {
-                    if injected {
-                        mensaje = "YA ESTA INYECTADO"
-                    } else {
-                        masterOn.toggle()
-                        let v = masterOn
-                        aimbot = v; espLine = v; aimFov = v; noRecoil = v; aimCuello = v; xitPlus = v; aimPecho = v
-                    }
+                    if !injected { mensaje = "PRIMERO DALE INJECT"; return }
+                    masterOn.toggle()
+                    let v = masterOn
+                    aimbot = v; espLine = v; aimFov = v; noRecoil = v; aimCuello = v; xitPlus = v; aimPecho = v
                 }) {
                     Text(masterOn ? "DESACTIVAR TODO" : "ACTIVAR TODO")
                         .font(.system(size: 9, weight: .black)).foregroundColor(.white)
@@ -118,7 +105,6 @@ struct ContentView: View {
                 }
 
                 HStack(spacing: 5) {
-                    // BOTON INJECT VERDADERO
                     Button(action: { hacerInject() }) {
                         Text(injected ? "INYECTADO ✔" : inyectando ? "INYECTANDO..." : "INJECT")
                             .font(.system(size: 9, weight: .bold)).foregroundColor(.white)
@@ -126,7 +112,6 @@ struct ContentView: View {
                             .background(injected ? Color.green : azulBoton).cornerRadius(6)
                     }
                     .disabled(inyectando || injected)
-
                     Button("STOP") {
                         injected = false; masterOn = false; inyectando = false; progreso = 0
                         aimbot = false; espLine = false; aimFov = false; noRecoil = false; aimCuello = false; xitPlus = false; aimPecho = false
@@ -137,14 +122,21 @@ struct ContentView: View {
                     .background(Color.white.opacity(0.15)).cornerRadius(6)
                 }
 
+                // BOTONES PARA REGRESAR AL JUEGO
                 HStack(spacing: 5) {
-                    Button("FREE FIRE") { if let url = URL(string: "freefire://") { UIApplication.shared.open(url) } }
-                        .font(.system(size: 9, weight: .bold)).foregroundColor(.white)
-                        .frame(maxWidth: .infinity).padding(.vertical, 5).background(azulOscuro).cornerRadius(6)
-                    Button("FREE FIRE MAX") { if let url = URL(string: "freefiremax://") { UIApplication.shared.open(url) } }
-                        .font(.system(size: 8, weight: .bold)).foregroundColor(.white)
-                        .frame(maxWidth: .infinity).padding(.vertical, 5).background(azulOscuro).cornerRadius(6)
+                    Button("FREE FIRE") {
+                        if let url = URL(string: "freefire://") { UIApplication.shared.open(url) }
+                    }
+                    .font(.system(size: 9, weight: .bold)).foregroundColor(.white)
+                    .frame(maxWidth: .infinity).padding(.vertical, 5).background(azulOscuro).cornerRadius(6)
+                    Button("FREE FIRE MAX") {
+                        if let url = URL(string: "freefiremax://") { UIApplication.shared.open(url) }
+                    }
+                    .font(.system(size: 8, weight: .bold)).foregroundColor(.white)
+                    .frame(maxWidth: .infinity).padding(.vertical, 5).background(azulOscuro).cornerRadius(6)
                 }
+                Text("1. INJECT  2. ACTIVA  3. DALE FREE FIRE PARA REGRESAR")
+                    .font(.system(size: 6, weight: .bold)).foregroundColor(.gray)
             }
             .padding(10)
             .frame(width: 260)
@@ -164,7 +156,6 @@ struct ContentView: View {
                 inyectando = false; injected = true
                 let f = DateFormatter(); f.dateFormat = "HH:mm:ss"; fechaInject = f.string(from: Date())
                 mensaje = "INYECCION COMPLETA ✔"
-                // Al inyectar, prende todo de verdad
                 masterOn = true; aimbot = true; espLine = true; aimFov = true; noRecoil = true; aimCuello = true; xitPlus = true; aimPecho = true
             }
         }
@@ -181,9 +172,7 @@ struct OptionRow: View {
             Text(title).font(.system(size: 9, weight: .bold)).foregroundColor(.white)
             Spacer()
             Text(isOn && injected ? "VERDADERO" : "FALSO").font(.system(size: 7, weight: .bold)).foregroundColor(isOn && injected ? .green : .gray)
-            Button(action: {
-                if injected { isOn.toggle() } else { onTapSinInject() }
-            }) {
+            Button(action: { if injected { isOn.toggle() } else { onTapSinInject() } }) {
                 Text(isOn && injected ? "ON" : "OFF")
                     .font(.system(size: 8, weight: .black)).foregroundColor(.white)
                     .frame(width: 38, height: 18)
