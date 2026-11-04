@@ -1,1 +1,17 @@
-
+name: Build IPA
+on: [push]
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build IPA
+        run: |
+          xcodebuild -project HN-ALEX7Z-FINAL.xcodeproj -target HN-ALEX7Z-FINAL -sdk iphoneos -configuration Release archive -archivePath app.xcarchive CODE_SIGNING_ALLOWED=NO
+          mkdir -p Payload
+          cp -R app.xcarchive/Products/Applications/*.app Payload/
+          zip -r HN-ALEX7Z-FINAL.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HN-ALEX7Z-FINAL-IPA
+          path: HN-ALEX7Z-FINAL.ipa
