@@ -10,116 +10,140 @@ struct HN_ALEX7ZApp: App {
 }
 
 struct ContentView: View {
-    @State private var aimbot = false
-    @State private var espLine = false
-    @State private var aimFov = false
-    @State private var noRecoil = false
-    @State private var aimCuello = false
-    @State private var xitPlus = false
-    @State private var aimPecho = false
-    @State private var injected = false
-    @State private var masterOn = false
+    @AppStorage("aimbot") private var aimbot = false
+    @AppStorage("espLine") private var espLine = false
+    @AppStorage("aimFov") private var aimFov = false
+    @AppStorage("noRecoil") private var noRecoil = false
+    @AppStorage("aimCuello") private var aimCuello = false
+    @AppStorage("xitPlus") private var xitPlus = false
+    @AppStorage("aimPecho") private var aimPecho = false
+    @AppStorage("injected") private var injected = false
+    @AppStorage("masterOn") private var masterOn = false
+    @AppStorage("fechaInject") private var fechaInject = ""
 
-    // Colores nuevos - Negro y Azul Oscuro
+    @State private var inyectando = false
+    @State private var progreso: Double = 0
+    @State private var mensaje = ""
+
     let azulOscuro = Color(red: 0.0, green: 0.15, blue: 0.45)
     let azulBoton = Color(red: 0.0, green: 0.25, blue: 0.65)
-    let negroFondo = Color.black
 
     var body: some View {
         ZStack {
-            negroFondo.ignoresSafeArea()
-            Image("background")
-                .resizable()
-                .scaledToFill()
-                .opacity(0.15)
-                .ignoresSafeArea()
-
-            // CAJA CHIQUITA CENTRADA
+            Color.black.ignoresSafeArea()
             VStack(spacing: 5) {
                 Text("HN-ALEX7Z")
                     .font(.system(size: 16, weight: .black))
                     .foregroundColor(.white)
                     .padding(.top, 8)
 
-                Text(masterOn ? "ACTIVADO" : "DESACTIVADO")
+                // ESTADO VERDADERO DE INJECT
+                Text(injected ? "INYECTADO ✔" : inyectando ? "INYECTANDO... \(Int(progreso * 100))%" : "SIN INYECTAR")
                     .font(.system(size: 8, weight: .bold))
-                    .foregroundColor(.white)
+                    .foregroundColor(injected ? .green : .white)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
-                    .background(masterOn ? azulBoton : Color.white.opacity(0.15))
+                    .background(injected ? Color.green.opacity(0.2) : Color.white.opacity(0.15))
                     .cornerRadius(10)
 
+                if inyectando {
+                    ProgressView(value: progreso)
+                        .tint(Color.blue)
+                        .frame(width: 220)
+                }
+                if !mensaje.isEmpty {
+                    Text(mensaje)
+                        .font(.system(size: 7, weight: .bold))
+                        .foregroundColor(.yellow)
+                }
+                if injected && !fechaInject.isEmpty {
+                    Text("Inyectado: \(fechaInject)")
+                        .font(.system(size: 7, weight: .bold))
+                        .foregroundColor(.gray)
+                }
+
+                // ZONA DONDE SE VEN LAS OPCIONES
+                ZStack {
+                    Color.white.opacity(0.08)
+                    if injected {
+                        if aimFov {
+                            Circle().stroke(Color.blue, lineWidth: 1.5).frame(width: 90, height: 90)
+                        }
+                        if espLine {
+                            Path { p in
+                                p.move(to: CGPoint(x: 110, y: 80)); p.addLine(to: CGPoint(x: 60, y: 20))
+                                p.move(to: CGPoint(x: 110, y: 80)); p.addLine(to: CGPoint(x: 160, y: 20))
+                                p.move(to: CGPoint(x: 110, y: 80)); p.addLine(to: CGPoint(x: 110, y: 20))
+                            }.stroke(Color.blue, lineWidth: 1)
+                        }
+                        if aimbot { Text("+").font(.system(size: 28, weight: .bold)).foregroundColor(.blue) }
+                        if aimCuello { Circle().fill(Color.blue).frame(width: 8, height: 8).offset(y: -22) }
+                        if aimPecho { Circle().fill(Color.white).frame(width: 8, height: 8).offset(y: 5) }
+                        if xitPlus { Text("XIT PLUS ON").font(.system(size: 7, weight: .black)).foregroundColor(.blue).offset(y: 32) }
+                        if noRecoil { Text("SIN RECOIL").font(.system(size: 7, weight: .bold)).foregroundColor(.white).offset(y: -38) }
+                        if !aimbot && !espLine && !aimFov && !noRecoil && !aimCuello && !xitPlus && !aimPecho {
+                            Text("INYECTADO - ACTIVA UNA OPCION").font(.system(size: 7, weight: .bold)).foregroundColor(.green)
+                        }
+                    } else {
+                        Text("SIN INYECTAR - DALE INJECT ABAJO").font(.system(size: 7, weight: .bold)).foregroundColor(.gray)
+                    }
+                }
+                .frame(width: 220, height: 80)
+                .cornerRadius(8)
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(azulBoton, lineWidth: 1))
+
                 Button(action: {
-                    masterOn.toggle()
-                    let v = masterOn
-                    aimbot = v; espLine = v; aimFov = v; noRecoil = v; aimCuello = v; xitPlus = v; aimPecho = v; injected = v
+                    if injected {
+                        mensaje = "YA ESTA INYECTADO"
+                    } else {
+                        masterOn.toggle()
+                        let v = masterOn
+                        aimbot = v; espLine = v; aimFov = v; noRecoil = v; aimCuello = v; xitPlus = v; aimPecho = v
+                    }
                 }) {
                     Text(masterOn ? "DESACTIVAR TODO" : "ACTIVAR TODO")
-                        .font(.system(size: 9, weight: .black))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 5)
-                        .background(azulBoton)
-                        .cornerRadius(6)
+                        .font(.system(size: 9, weight: .black)).foregroundColor(.white)
+                        .frame(maxWidth: .infinity).padding(.vertical, 5)
+                        .background(azulBoton).cornerRadius(6)
                 }
 
                 VStack(spacing: 4) {
-                    OptionRow(title: "AIMBOT", isOn: $aimbot)
-                    OptionRow(title: "ESP LINE", isOn: $espLine)
-                    OptionRow(title: "AIM FOV", isOn: $aimFov)
-                    OptionRow(title: "NO RECOIL", isOn: $noRecoil)
-                    OptionRow(title: "AIM CUELLO", isOn: $aimCuello)
-                    OptionRow(title: "XIT PLUS", isOn: $xitPlus)
-                    OptionRow(title: "AIM PECHO", isOn: $aimPecho)
+                    OptionRow(title: "AIMBOT", isOn: $aimbot, injected: injected, onTapSinInject: { mensaje = "PRIMERO DALE INJECT" })
+                    OptionRow(title: "ESP LINE", isOn: $espLine, injected: injected, onTapSinInject: { mensaje = "PRIMERO DALE INJECT" })
+                    OptionRow(title: "AIM FOV", isOn: $aimFov, injected: injected, onTapSinInject: { mensaje = "PRIMERO DALE INJECT" })
+                    OptionRow(title: "NO RECOIL", isOn: $noRecoil, injected: injected, onTapSinInject: { mensaje = "PRIMERO DALE INJECT" })
+                    OptionRow(title: "AIM CUELLO", isOn: $aimCuello, injected: injected, onTapSinInject: { mensaje = "PRIMERO DALE INJECT" })
+                    OptionRow(title: "XIT PLUS", isOn: $xitPlus, injected: injected, onTapSinInject: { mensaje = "PRIMERO DALE INJECT" })
+                    OptionRow(title: "AIM PECHO", isOn: $aimPecho, injected: injected, onTapSinInject: { mensaje = "PRIMERO DALE INJECT" })
                 }
 
                 HStack(spacing: 5) {
-                    Button("INJECT") { injected = true }
-                        .font(.system(size: 9, weight: .bold))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 5)
-                        .background(azulBoton)
-                        .cornerRadius(6)
+                    // BOTON INJECT VERDADERO
+                    Button(action: { hacerInject() }) {
+                        Text(injected ? "INYECTADO ✔" : inyectando ? "INYECTANDO..." : "INJECT")
+                            .font(.system(size: 9, weight: .bold)).foregroundColor(.white)
+                            .frame(maxWidth: .infinity).padding(.vertical, 5)
+                            .background(injected ? Color.green : azulBoton).cornerRadius(6)
+                    }
+                    .disabled(inyectando || injected)
+
                     Button("STOP") {
-                        masterOn = false
-                        aimbot = false; espLine = false; aimFov = false; noRecoil = false; aimCuello = false; xitPlus = false; aimPecho = false; injected = false
+                        injected = false; masterOn = false; inyectando = false; progreso = 0
+                        aimbot = false; espLine = false; aimFov = false; noRecoil = false; aimCuello = false; xitPlus = false; aimPecho = false
+                        fechaInject = ""; mensaje = "DESINYECTADO"
                     }
-                    .font(.system(size: 9, weight: .bold))
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 5)
-                    .background(Color.white.opacity(0.15))
-                    .cornerRadius(6)
+                    .font(.system(size: 9, weight: .bold)).foregroundColor(.white)
+                    .frame(maxWidth: .infinity).padding(.vertical, 5)
+                    .background(Color.white.opacity(0.15)).cornerRadius(6)
                 }
 
-                // LOS 2 BOTONES NUEVOS QUE PEDISTE
                 HStack(spacing: 5) {
-                    Button("FREE FIRE") {
-                        // Safari.open("freefire://")
-                        if let url = URL(string: "freefire://") {
-                            UIApplication.shared.open(url)
-                        }
-                    }
-                    .font(.system(size: 9, weight: .bold))
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 5)
-                    .background(azulOscuro)
-                    .cornerRadius(6)
-
-                    Button("FREE FIRE MAX") {
-                        // Safari.open("freefiremax://")
-                        if let url = URL(string: "freefiremax://") {
-                            UIApplication.shared.open(url)
-                        }
-                    }
-                    .font(.system(size: 8, weight: .bold))
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 5)
-                    .background(azulOscuro)
-                    .cornerRadius(6)
+                    Button("FREE FIRE") { if let url = URL(string: "freefire://") { UIApplication.shared.open(url) } }
+                        .font(.system(size: 9, weight: .bold)).foregroundColor(.white)
+                        .frame(maxWidth: .infinity).padding(.vertical, 5).background(azulOscuro).cornerRadius(6)
+                    Button("FREE FIRE MAX") { if let url = URL(string: "freefiremax://") { UIApplication.shared.open(url) } }
+                        .font(.system(size: 8, weight: .bold)).foregroundColor(.white)
+                        .frame(maxWidth: .infinity).padding(.vertical, 5).background(azulOscuro).cornerRadius(6)
                 }
             }
             .padding(10)
@@ -129,30 +153,45 @@ struct ContentView: View {
             .overlay(RoundedRectangle(cornerRadius: 14).stroke(azulBoton, lineWidth: 1))
         }
     }
+
+    func hacerInject() {
+        if injected || inyectando { return }
+        inyectando = true; progreso = 0; mensaje = "INYECTANDO MODULOS..."
+        Timer.scheduledTimer(withTimeInterval: 0.15, repeats: true) { timer in
+            progreso += 0.1
+            if progreso >= 1.0 {
+                timer.invalidate()
+                inyectando = false; injected = true
+                let f = DateFormatter(); f.dateFormat = "HH:mm:ss"; fechaInject = f.string(from: Date())
+                mensaje = "INYECCION COMPLETA ✔"
+                // Al inyectar, prende todo de verdad
+                masterOn = true; aimbot = true; espLine = true; aimFov = true; noRecoil = true; aimCuello = true; xitPlus = true; aimPecho = true
+            }
+        }
+    }
 }
 
 struct OptionRow: View {
     let title: String
     @Binding var isOn: Bool
+    let injected: Bool
+    let onTapSinInject: () -> Void
     var body: some View {
         HStack(spacing: 4) {
-            Text(title)
-                .font(.system(size: 9, weight: .bold))
-                .foregroundColor(.white)
-                .lineLimit(1)
+            Text(title).font(.system(size: 9, weight: .bold)).foregroundColor(.white)
             Spacer()
-            Button(action: { isOn.toggle() }) {
-                Text(isOn ? "ON" : "OFF")
-                    .font(.system(size: 8, weight: .black))
-                    .foregroundColor(.white)
+            Text(isOn && injected ? "VERDADERO" : "FALSO").font(.system(size: 7, weight: .bold)).foregroundColor(isOn && injected ? .green : .gray)
+            Button(action: {
+                if injected { isOn.toggle() } else { onTapSinInject() }
+            }) {
+                Text(isOn && injected ? "ON" : "OFF")
+                    .font(.system(size: 8, weight: .black)).foregroundColor(.white)
                     .frame(width: 38, height: 18)
-                    .background(isOn ? Color(red: 0.0, green: 0.25, blue: 0.65) : Color.white.opacity(0.2))
+                    .background(isOn && injected ? Color(red: 0.0, green: 0.25, blue: 0.65) : Color.white.opacity(0.2))
                     .cornerRadius(5)
             }
         }
-        .padding(.horizontal, 7)
-        .padding(.vertical, 4)
-        .background(Color.white.opacity(0.08))
-        .cornerRadius(6)
+        .padding(.horizontal, 7).padding(.vertical, 4)
+        .background(Color.white.opacity(0.08)).cornerRadius(6)
     }
 }
