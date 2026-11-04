@@ -10,7 +10,6 @@ struct HN_ALEX7ZApp: App {
 }
 
 struct ContentView: View {
-    // TODAS APAGADAS AL ENTRAR
     @State private var aimbot = false
     @State private var espLine = false
     @State private var aimFov = false
@@ -19,10 +18,10 @@ struct ContentView: View {
     @State private var xitPlus = false
     @State private var aimPecho = false
     @State private var injected = false
+    @State private var masterOn = false
 
     var body: some View {
         ZStack {
-            // FONDO = TU FOTO
             Image("background")
                 .resizable()
                 .scaledToFill()
@@ -30,74 +29,128 @@ struct ContentView: View {
             Color.black.opacity(0.35)
                 .ignoresSafeArea()
 
-            VStack(spacing: 14) {
-                Text("HN-ALEX7Z")
-                    .font(.system(size: 28, weight: .black))
-                    .foregroundColor(.white)
-                    .shadow(radius: 5)
+            ScrollView {
+                VStack(spacing: 6) {
+                    Text("HN-ALEX7Z")
+                        .font(.system(size: 20, weight: .black))
+                        .foregroundColor(.white)
+                        .shadow(radius: 5)
+                        .padding(.top, 10)
 
-                Text("INJECTED")
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundColor(injected ? .green : .gray)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 6)
-                    .background((injected ? Color.green : Color.gray).opacity(0.2))
-                    .cornerRadius(20)
+                    Text(masterOn ? "ACTIVADO" : "DESACTIVADO")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(masterOn ? .green : .gray)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background((masterOn ? Color.green : Color.gray).opacity(0.2))
+                        .cornerRadius(20)
 
-                VStack(spacing: 10) {
-                    ToggleRow(title: "AIMBOT", isOn: $aimbot)
-                    ToggleRow(title: "ESP LINE", isOn: $espLine)
-                    ToggleRow(title: "AIM FOV", isOn: $aimFov)
-                    ToggleRow(title: "NO RECOIL", isOn: $noRecoil)
-                    ToggleRow(title: "AIM CUELLO", isOn: $aimCuello)
-                    ToggleRow(title: "XIT PLUS", isOn: $xitPlus)
-                    ToggleRow(title: "AIM PECHO", isOn: $aimPecho)
-                }
-
-                HStack(spacing: 10) {
-                    Button("INJECT") {
-                        injected = true
+                    // BOTON MAESTRO
+                    Button(action: {
+                        masterOn.toggle()
+                        let v = masterOn
+                        aimbot = v; espLine = v; aimFov = v; noRecoil = v; aimCuello = v; xitPlus = v; aimPecho = v; injected = v
+                    }) {
+                        Text(masterOn ? "DESACTIVAR TODO" : "ACTIVAR TODO")
+                            .font(.system(size: 11, weight: .black))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 7)
+                            .background(masterOn ? Color.red : Color.green)
+                            .cornerRadius(8)
                     }
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 10)
-                    .background(Color.green)
-                    .cornerRadius(12)
 
-                    Button("STOP") {
-                        aimbot = false; espLine = false; aimFov = false; noRecoil = false; aimCuello = false; xitPlus = false; aimPecho = false; injected = false
+                    // CADA OPCION CON SU BOTONCITO
+                    VStack(spacing: 6) {
+                        OptionRow(title: "AIMBOT", isOn: $aimbot)
+                        OptionRow(title: "ESP LINE", isOn: $espLine)
+                        OptionRow(title: "AIM FOV", isOn: $aimFov)
+                        OptionRow(title: "NO RECOIL", isOn: $noRecoil)
+                        OptionRow(title: "AIM CUELLO", isOn: $aimCuello)
+                        OptionRow(title: "XIT PLUS", isOn: $xitPlus)
+                        OptionRow(title: "AIM PECHO", isOn: $aimPecho)
                     }
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 10)
-                    .background(Color.red)
-                    .cornerRadius(12)
+
+                    HStack(spacing: 6) {
+                        Button("INJECT") { injected = true }
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 6)
+                            .background(Color.green)
+                            .cornerRadius(8)
+
+                        Button("STOP") {
+                            masterOn = false
+                            aimbot = false; espLine = false; aimFov = false; noRecoil = false; aimCuello = false; xitPlus = false; aimPecho = false; injected = false
+                        }
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 6)
+                        .background(Color.red)
+                        .cornerRadius(8)
+                    }
+
+                    HStack(spacing: 6) {
+                        Button("FREE FIRE") {
+                            openApp(urlScheme: "freefire://", appStoreID: "1300146617")
+                        }
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 7)
+                        .background(Color.orange)
+                        .cornerRadius(8)
+
+                        Button("FREE FIRE MAX") {
+                            openApp(urlScheme: "freefiremax://", appStoreID: "1480516829")
+                        }
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 7)
+                        .background(Color.blue)
+                        .cornerRadius(8)
+                    }
                 }
-                .padding(.top, 4)
+                .padding(.horizontal, 14)
+                .padding(.bottom, 20)
             }
-            .padding(.horizontal, 20)
+        }
+    }
+
+    func openApp(urlScheme: String, appStoreID: String) {
+        if let url = URL(string: urlScheme), UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
+        } else if let storeURL = URL(string: "https://apps.apple.com/app/id\(appStoreID)") {
+            UIApplication.shared.open(storeURL)
         }
     }
 }
 
-struct ToggleRow: View {
+struct OptionRow: View {
     let title: String
     @Binding var isOn: Bool
     var body: some View {
-        HStack {
+        HStack(spacing: 6) {
             Text(title)
-                .font(.system(size: 15, weight: .bold))
+                .font(.system(size: 11, weight: .bold))
                 .foregroundColor(.white)
             Spacer()
-            Toggle("", isOn: $isOn)
-                .labelsHidden()
-                .tint(.red)
+            // BOTONCITO PEQUEÑO POR OPCION
+            Button(action: { isOn.toggle() }) {
+                Text(isOn ? "ON" : "OFF")
+                    .font(.system(size: 9, weight: .black))
+                    .foregroundColor(.white)
+                    .frame(width: 48, height: 22)
+                    .background(isOn ? Color.green : Color.gray)
+                    .cornerRadius(6)
+            }
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
         .background(Color.white.opacity(0.12))
-        .cornerRadius(12)
+        .cornerRadius(8)
     }
 }
