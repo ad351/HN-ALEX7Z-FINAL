@@ -5,8 +5,10 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Fix project
+      - name: Clean everything
         run: |
+          rm -rf build
+          rm -rf HN-ALEX7Z-FINAL/build
           rm -rf HN-ALEX7Z-FINAL.xcodeproj
           rm -rf HN-ALEX7Z-FINAL/HN-ALEX7Z-FINAL
           mkdir -p HN-ALEX7Z-FINAL
@@ -39,10 +41,10 @@ jobs:
           PBX
       - name: Build IPA
         run: |
-          xcodebuild -project HN-ALEX7Z-FINAL.xcodeproj -target HN-ALEX7Z-FINAL -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO
-          APP=$(find ~/Library/Developer/Xcode/DerivedData -name "HN-ALEX7Z-FINAL.app" -type d | head -1)
-          if [ -z "$APP" ]; then APP=$(find build -name "HN-ALEX7Z-FINAL.app" -o -find . -name "HN-ALEX7Z-FINAL.app" | head -1); fi
-          echo "APP at $APP"
+          xcodebuild clean -project HN-ALEX7Z-FINAL.xcodeproj -target HN-ALEX7Z-FINAL -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO
+          xcodebuild -project HN-ALEX7Z-FINAL.xcodeproj -target HN-ALEX7Z-FINAL -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO SYMROOT=./build_result
+          APP=$(find ./build_result -name "HN-ALEX7Z-FINAL.app" | head -1)
+          echo "APP: $APP"
           ls -lh "$APP"
           mkdir -p Payload
           cp -r "$APP" Payload/
