@@ -12,29 +12,28 @@ jobs:
         run: |
           set -ex
           SDK=$(xcrun --sdk iphoneos --show-sdk-path)
-          xcrun --sdk iphoneos swiftc -parse-as-library -target arm64-apple-ios16.0 -O -o HackApp ContentView.swift -sdk $SDK -framework SwiftUI -framework UIKit -framework Foundation
+          xcrun --sdk iphoneos swiftc -parse-as-library -sdk $SDK -target arm64-apple-ios17.0 -o HackApp ContentView.swift
           mkdir -p Payload/HackApp.app
           mv HackApp Payload/HackApp.app/
           echo "APPL????" > Payload/HackApp.app/PkgInfo
-          cat > Payload/HackApp.app/Info.plist << 'PLIST'
+          cat > Payload/HackApp.app/Info.plist << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
           <plist version="1.0"><dict>
             <key>CFBundleExecutable</key><string>HackApp</string>
-            <key>CFBundleIdentifier</key><string>com.hnalex7z.rainbow</string>
-            <key>CFBundleName</key><string>HN-ALEX7z</string>
-            <key>CFBundleDisplayName</key><string>HN-ALEX7z</string>
+            <key>CFBundleIdentifier</key><string>com.hn.alex7z</string>
+            <key>CFBundleName</key><string>HN-ALEX7Z</string>
             <key>CFBundleVersion</key><string>1.0</string>
             <key>CFBundleShortVersionString</key><string>1.0</string>
-            <key>CFBundlePackageType</key><string>APPL</string>
-            <key>MinimumOSVersion</key><string>16.0</string>
-            <key>LSRequiresIPhoneOS</key><true/>
-            <key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string></array>
+            <key>MinimumOSVersion</key><string>15.0</string>
+            <key>UIDeviceFamily</key><array><integer>1</integer><integer>2</integer></array>
+            <key>UILaunchStoryboardName</key><string></string>
           </dict></plist>
-          PLIST
-          codesign --force --sign - --timestamp=none Payload/HackApp.app || true
-          zip -r HN-ALEX7z-EXTERNAL-RAINBOW-REAL.ipa Payload
-      - uses: softprops/action-gh-release@v1
+          EOF
+          zip -r HN-ALEX7Z.ipa Payload
+          ls -lh
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: v${{ github.run_number }}
-          files: HN-ALEX7z-EXTERNAL-RAINBOW-REAL.ipa
+          name: HN-ALEX7Z-IPA
+          path: HN-ALEX7Z.ipa
