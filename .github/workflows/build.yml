@@ -1,26 +1,40 @@
 name: Build IPA
-
 on:
   workflow_dispatch:
-
 permissions:
   contents: write
-
 jobs:
   build:
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
-      - name: Build
+      - name: Build for REAL iPhone
         run: |
-          SDK=$(xcrun --sdk iphonesimulator --show-sdk-path)
-          xcrun --sdk iphonesimulator swiftc -parse-as-library -o HackApp -target arm64-apple-ios16.0-simulator ContentView.swift -sdk $SDK -framework SwiftUI
+          SDK=$(xcrun --sdk iphoneos --show-sdk-path)
+          xcrun --sdk iphoneos swiftc -parse-as-library -target arm64-apple-ios16.0 -O -o HackApp ContentView.swift -sdk $SDK -framework SwiftUI -framework UIKit
           mkdir -p Payload/HackApp.app
           mv HackApp Payload/HackApp.app/
           echo "APPL????" > Payload/HackApp.app/PkgInfo
-          echo '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>CFBundleExecutable</key><string>HackApp</string><key>CFBundleIdentifier</key><string>com.hnalex7z.rainbow</string><key>CFBundleName</key><string>HN-ALEX7z</string><key>CFBundleVersion</key><string>1.0</string><key>CFBundlePackageType</key><string>APPL</string><key>LSRequiresIPhoneOS</key><true/></dict></plist>' > Payload/HackApp.app/Info.plist
-          zip -r HN-ALEX7z-EXTERNAL-RAINBOW.ipa Payload
+          cat > Payload/HackApp.app/Info.plist << 'PLIST'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+          <key>CFBundleExecutable</key><string>HackApp</string>
+          <key>CFBundleIdentifier</key><string>com.hnalex7z.rainbow</string>
+          <key>CFBundleName</key><string>HN-ALEX7z</string>
+          <key>CFBundleDisplayName</key><string>HN-ALEX7z</string>
+          <key>CFBundleVersion</key><string>1.0</string>
+          <key>CFBundleShortVersionString</key><string>1.0</string>
+          <key>CFBundlePackageType</key><string>APPL</string>
+          <key>MinimumOSVersion</key><string>16.0</string>
+          <key>LSRequiresIPhoneOS</key><true/>
+          <key>UILaunchStoryboardName</key><string>LaunchScreen</string>
+          <key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string></array>
+          </dict></plist>
+          PLIST
+          codesign -f -s - Payload/HackApp.app --timestamp=none
+          zip -r HN-ALEX7z-EXTERNAL-RAINBOW-REAL.ipa Payload
       - uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ github.run_number }}
-          files: HN-ALEX7z-EXTERNAL-RAINBOW.ipa
+          files: HN-ALEX7z-EXTERNAL-RAINBOW-REAL.ipa
