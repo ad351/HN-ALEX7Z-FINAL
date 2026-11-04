@@ -1,53 +1,40 @@
-import SwiftUI
-
-struct ContentView: View {
-    @State var hue: Double = 0
-    @State var aimbot = True
-    @State var esp = True
-    @State var aimFov = True
-    @State var noRecoil = True
-    
-    let colors: [Color] = [.blue, .purple, .green, .yellow, .red, .orange, .blue]
-    
-    var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
-            VStack(spacing: 10) {
-                // LOGO
-                Text("HN-ALEX7z")
-                    .font(.system(size: 32, weight: .heavy, design: .rounded))
-                    .foregroundColor(.white)
-                Text("EXTERNAL")
-                    .font(.system(size: 28, weight: .black, design: .rounded))
-                    .foregroundStyle(LinearGradient(gradient: Gradient(colors: colors), startPoint: .leading, endPoint: .trailing))
-                    .hueRotation(.degrees(hue * 360))
-                    .shadow(color: .blue.opacity(0.9), radius: 40, x: 0, y: 10)
-                    .shadow(color: .red.opacity(0.8), radius: 40, x: 0, y: 0)
-                
-                Spacer().frame(height: 20)
-                
-                // OPCIONES
-                ScrollView {
-                    VStack(spacing: 12) {
-                        Toggle("AIMBOT", isOn: $aimbot)
-                        Toggle("ESP LINE", isOn: $esp)
-                        Toggle("AIM FOV", isOn: $aimFov)
-                        Toggle("NO RECOIL", isOn: $noRecoil)
-                    }
-                    .toggleStyle(SwitchToggleStyle(tint: .orange))
-                    .foregroundColor(.white)
-                    .padding()
-                    .background(Color.white.opacity(0.1))
-                    .cornerRadius(15)
-                    .padding(.horizontal)
-                }
-            }
-            .padding(.top, 60)
-        }
-        .onAppear {
-            withAnimation(.linear(duration: 3).repeatForever(autoreverses: false)) {
-                hue = 1
-            }
-        }
-    }
-}
+name: Build IPA
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build REAL iPhone FIX
+        run: |
+          set -ex
+          SDK=$(xcrun --sdk iphoneos --show-sdk-path)
+          xcrun --sdk iphoneos swiftc -parse-as-library -target arm64-apple-ios16.0 -O -o HackApp ContentView.swift -sdk $SDK -framework SwiftUI -framework UIKit -framework Foundation
+          mkdir -p Payload/HackApp.app
+          mv HackApp Payload/HackApp.app/
+          echo "APPL????" > Payload/HackApp.app/PkgInfo
+          cat > Payload/HackApp.app/Info.plist << 'PLIST'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>CFBundleExecutable</key><string>HackApp</string>
+            <key>CFBundleIdentifier</key><string>com.hnalex7z.rainbow</string>
+            <key>CFBundleName</key><string>HN-ALEX7z</string>
+            <key>CFBundleDisplayName</key><string>HN-ALEX7z</string>
+            <key>CFBundleVersion</key><string>1.0</string>
+            <key>CFBundleShortVersionString</key><string>1.0</string>
+            <key>CFBundlePackageType</key><string>APPL</string>
+            <key>MinimumOSVersion</key><string>16.0</string>
+            <key>LSRequiresIPhoneOS</key><true/>
+            <key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string></array>
+          </dict></plist>
+          PLIST
+          codesign --force --sign - --timestamp=none Payload/HackApp.app || true
+          zip -r HN-ALEX7z-EXTERNAL-RAINBOW-REAL.ipa Payload
+      - uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ github.run_number }}
+          files: HN-ALEX7z-EXTERNAL-RAINBOW-REAL.ipa
