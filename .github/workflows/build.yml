@@ -5,12 +5,10 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Clean everything
+      - name: Build IPA Manually (no xcodeproj)
         run: |
-          rm -rf build
+          rm -rf build Payload *.ipa
           rm -rf HN-ALEX7Z-FINAL/build
-          rm -rf HN-ALEX7Z-FINAL.xcodeproj
-          rm -rf HN-ALEX7Z-FINAL/HN-ALEX7Z-FINAL
           mkdir -p HN-ALEX7Z-FINAL
           cat > HN-ALEX7Z-FINAL/HNApp.swift <<'SWIFT'
           import SwiftUI
@@ -27,28 +25,39 @@ jobs:
           import SwiftUI
           struct ContentView: View {
               var body: some View {
-                  VStack {
+                  VStack(spacing:20){
                       Text("HN-ALEX7Z-FINAL").font(.largeTitle).bold()
-                      Text("Build OK!").foregroundColor(.green)
-                  }
+                      Text("Build OK! IPA Manual").foregroundColor(.green)
+                      Text("No Xcode Project Needed")
+                  }.padding()
               }
           }
           SWIFT
-          mkdir -p HN-ALEX7Z-FINAL.xcodeproj
-          cat > HN-ALEX7Z-FINAL.xcodeproj/project.pbxproj <<'PBX'
-          // !$*UTF8*$!
-          {archiveVersion=1; classes={}; objectVersion=56; objects={A1={isa=PBXBuildFile; fileRef=A5;}; A2={isa=PBXBuildFile; fileRef=A6;}; A3={isa=PBXFileReference; explicitFileType=wrapper.application; includeInIndex=0; path=HN-ALEX7Z-FINAL.app; sourceTree=BUILT_PRODUCTS_DIR;}; A5={isa=PBXFileReference; lastKnownFileType=sourcecode.swift; path=ContentView.swift; sourceTree="<group>";}; A6={isa=PBXFileReference; lastKnownFileType=sourcecode.swift; path=HNApp.swift; sourceTree="<group>";}; G0={isa=PBXGroup; children=(GA,GB); sourceTree="<group>";}; GB={isa=PBXGroup; children=(A3); name=Products; sourceTree="<group>";}; GA={isa=PBXGroup; children=(A5,A6); path=HN-ALEX7Z-FINAL; sourceTree="<group>";}; TC={isa=PBXNativeTarget; buildConfigurationList=CL2; buildPhases=(S0,A8,R0); buildRules=(); dependencies=(); name=HN-ALEX7Z-FINAL; productName=HN-ALEX7Z-FINAL; productReference=A3; productType="com.apple.product-type.application";}; PR={isa=PBXProject; attributes={BuildIndependentTargetsInParallel=1;}; buildConfigurationList=CL1; compatibilityVersion="Xcode 14.0"; developmentRegion=en; hasScannedForEncodings=0; knownRegions=(en,Base); mainGroup=G0; productRefGroup=GB; projectDirPath=""; projectRoot=""; targets=(TC);}; R0={isa=PBXResourcesBuildPhase; buildActionMask=2147483647; files=(); runOnlyForDeploymentPostprocessing=0;}; S0={isa=PBXSourcesBuildPhase; buildActionMask=2147483647; files=(A2,A1); runOnlyForDeploymentPostprocessing=0;}; A8={isa=PBXFrameworksBuildPhase; buildActionMask=2147483647; files=(); runOnlyForDeploymentPostprocessing=0;}; C1={isa=XCBuildConfiguration; buildSettings={CODE_SIGNING_ALLOWED=NO; IPHONEOS_DEPLOYMENT_TARGET=16.0; SDKROOT=iphoneos; SWIFT_VERSION=5.0;}; name=Debug;}; C2={isa=XCBuildConfiguration; buildSettings={CODE_SIGNING_ALLOWED=NO; IPHONEOS_DEPLOYMENT_TARGET=16.0; SDKROOT=iphoneos; SWIFT_VERSION=5.0;}; name=Release;}; C3={isa=XCBuildConfiguration; buildSettings={CODE_SIGN_STYLE=Automatic; GENERATE_INFOPLIST_FILE=YES; PRODUCT_BUNDLE_IDENTIFIER=com.ad351.HN-ALEX7Z-FINAL;}; name=Debug;}; C4={isa=XCBuildConfiguration; buildSettings={CODE_SIGN_STYLE=Automatic; GENERATE_INFOPLIST_FILE=YES; PRODUCT_BUNDLE_IDENTIFIER=com.ad351.HN-ALEX7Z-FINAL;}; name=Release;}; CL1={isa=XCConfigurationList; buildConfigurations=(C1,C2); defaultConfigurationIsVisible=0; defaultConfigurationName=Release;}; CL2={isa=XCConfigurationList; buildConfigurations=(C3,C4); defaultConfigurationIsVisible=0; defaultConfigurationName=Release;};}; rootObject=PR;}
-          PBX
-      - name: Build IPA
-        run: |
-          xcodebuild clean -project HN-ALEX7Z-FINAL.xcodeproj -target HN-ALEX7Z-FINAL -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO
-          xcodebuild -project HN-ALEX7Z-FINAL.xcodeproj -target HN-ALEX7Z-FINAL -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO SYMROOT=./build_result
-          APP=$(find ./build_result -name "HN-ALEX7Z-FINAL.app" | head -1)
-          echo "APP: $APP"
-          ls -lh "$APP"
-          mkdir -p Payload
-          cp -r "$APP" Payload/
+          mkdir -p Payload/HN-ALEX7Z-FINAL.app
+          cat > Payload/HN-ALEX7Z-FINAL.app/Info.plist <<'PLIST'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+          <key>CFBundleIdentifier</key><string>com.ad351.HN-ALEX7Z-FINAL</string>
+          <key>CFBundleName</key><string>HN-ALEX7Z-FINAL</string>
+          <key>CFBundleDisplayName</key><string>HN-ALEX7Z-FINAL</string>
+          <key>CFBundleExecutable</key><string>HN-ALEX7Z-FINAL</string>
+          <key>CFBundlePackageType</key><string>APPL</string>
+          <key>CFBundleVersion</key><string>1.0</string>
+          <key>CFBundleShortVersionString</key><string>1.0</string>
+          <key>LSRequiresIPhoneOS</key><true/>
+          <key>UILaunchStoryboardName</key><string></string>
+          <key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string></array>
+          <key>MinimumOSVersion</key><string>16.0</string>
+          </dict></plist>
+          PLIST
+          echo "APPL????" > Payload/HN-ALEX7Z-FINAL.app/PkgInfo
+          xcrun --sdk iphoneos swiftc -target arm64-apple-ios16.0 -O -o Payload/HN-ALEX7Z-FINAL.app/HN-ALEX7Z-FINAL HN-ALEX7Z-FINAL/*.swift -Xlinker -rpath -Xlinker @executable_path/Frameworks
+          chmod +x Payload/HN-ALEX7Z-FINAL.app/HN-ALEX7Z-FINAL
+          ls -lh Payload/HN-ALEX7Z-FINAL.app/
+          file Payload/HN-ALEX7Z-FINAL.app/HN-ALEX7Z-FINAL
           zip -r HN-ALEX7Z-FINAL.ipa Payload
+          ls -lh *.ipa
       - uses: actions/upload-artifact@v4
         with:
           name: HN-ALEX7Z-FINAL-IPA
