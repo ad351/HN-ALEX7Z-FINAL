@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>freefire</string>
+        <string>garenafreefire</string>
+        <string>freefiremax</string>
+        <string>garenafreefiremax</string>
+        <string>com.dts.freefireth</string>
+        <string>com.dts.freefiremax</string>
+    </array>
+</dict>
+</plist>
